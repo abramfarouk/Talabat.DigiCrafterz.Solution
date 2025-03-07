@@ -1,0 +1,15 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Talabat.Core.Entities;
+
+namespace Talabat.Repository.Data.Configurations
+{
+    class CategoryConfig : IEntityTypeConfiguration<Category>
+    {
+        public void Configure(EntityTypeBuilder<Category> builder)
+        {
+            builder.Property(c => c.Name).IsRequired();
+
+        }
+    }
+}
