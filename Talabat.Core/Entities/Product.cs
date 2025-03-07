@@ -11,11 +11,11 @@ namespace Talabat.Core.Entities
         public string PictureUrl { get; set; }
 
         [ForeignKey("Brand")]
-        public Guid? BrandId { get; set; }
-        public virtual Brand? Brand { get; set; }
+        public Guid BrandId { get; set; }
+        public virtual Brand Brand { get; set; }
         [ForeignKey(nameof(Product.Category))]
         //[InverseProperty(nameof(Category.Products))]
-        public Guid? CategoryId { get; set; }
-        public virtual Category? Category { get; set; }
+        public Guid CategoryId { get; set; }
+        public virtual Category Category { get; set; }
     }
 }
