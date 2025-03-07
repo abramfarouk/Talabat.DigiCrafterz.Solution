@@ -7,11 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="DTOS\CategoryDtos\" />
+    <Folder Include="DTOS\BrandDtos\" />
     <Folder Include="Services.Contract\" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="14.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
   </ItemGroup>
 
 </Project>

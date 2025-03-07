@@ -1,5 +1,6 @@
 
 using Microsoft.EntityFrameworkCore;
+using Talabat.Core.Helper;
 using Talabat.Core.Repositories.Contract;
 using Talabat.Repository;
 using Talabat.Repository.Data;
@@ -27,6 +28,8 @@ namespace Talabat.APIs
             { options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectionDB")); }
 
             );
+
+            builder.Services.AddAutoMapper(typeof(MappingProfiles));
 
             var app = builder.Build();
 
@@ -61,7 +64,9 @@ namespace Talabat.APIs
                 app.UseSwaggerUI();
             }
 
+
             app.UseHttpsRedirection();
+            app.UseStaticFiles();
 
             app.UseAuthorization();
 

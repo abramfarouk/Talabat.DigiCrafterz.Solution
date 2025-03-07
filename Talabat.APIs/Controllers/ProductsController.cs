@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using Talabat.Core.DTOS.ProductDtos;
 using Talabat.Core.Entities;
 using Talabat.Core.Repositories.Contract;
 using Talabat.Core.Specifications.Product_Specs;
@@ -11,28 +13,35 @@ namespace Talabat.APIs.Controllers
     {
 
         private readonly IGenericRepository<Product> _productRepo;
-        public ProductsController(IGenericRepository<Product> productRepo)
+        private readonly IMapper _mapper;
+        public ProductsController(IGenericRepository<Product> productRepo, IMapper mapper)
         {
             _productRepo = productRepo;
+            _mapper = mapper;
         }
 
         [HttpGet("GetAll")]
-        public async Task<ActionResult<Product>> GetAllAsync()
+        public async Task<ActionResult<ProductResponseDto>> GetAllAsync()
         {
             var spec = new ProductWithBrandAndCategorySpecifications();
-            return Ok(await _productRepo.GetAllWithSpecAsync(spec));
+            var products = await _productRepo.GetAllWithSpecAsync(spec);
+
+            return Ok(_mapper.Map<IEnumerable<Product>, IEnumerable<ProductResponseDto>>(products));
         }
 
         [HttpGet("GetById/{id}")]
-        public async Task<ActionResult<Product>> GetById(Guid id)
+        public async Task<ActionResult<ProductResponseDto>> GetById(Guid id)
         {
-            var product = await _productRepo.GetByIdAsync(id);
+            var spec = new ProductWithBrandAndCategorySpecifications(id);
+
+            var product = await _productRepo.GetByIdWithSpecAsync(spec);
+
             if (product == null)
             {
                 return NotFound(new { message = $"Product Not Found With Id => [{id}] Try Again !" });
             }
 
-            return Ok(product);
+            return Ok(_mapper.Map<Product, ProductResponseDto>(product));
 
         }
     }
