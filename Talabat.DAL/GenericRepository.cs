@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.Storage;
 using Talabat.Core.Entities;
 using Talabat.Core.Repositories.Contract;
+using Talabat.Core.Specifications;
 using Talabat.Repository.Data;
 
 namespace Talabat.Repository
@@ -75,6 +76,20 @@ namespace Talabat.Repository
             await _context.Database.RollbackTransactionAsync();
         }
 
+        public async Task<IEnumerable<T>> GetAllWithSpecAsync(ISpecifications<T> spec)
+        {
+            return await ApplySpecifications(spec).ToListAsync();
+        }
+
+        public async Task<T> GetByIdWithSpecAsync(ISpecifications<T> spec)
+        {
+            return await ApplySpecifications(spec).FirstOrDefaultAsync();
+
+        }
+
+
+        private IQueryable<T> ApplySpecifications(ISpecifications<T> specifications)
+            => SPecificationsEvaluator<T>.GetQuery(_context.Set<T>(), specifications);
 
 
 

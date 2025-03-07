@@ -23,42 +23,32 @@ namespace Talabat.APIs
 
 
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-
-
-
-
-
-
-
-
-
-
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
-            {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectionDB"));
-            });
+            { options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectionDB")); }
+
+            );
 
             var app = builder.Build();
 
 
 
+            //Update Database Dynamic
             using var scope = app.Services.CreateScope();
             var services = scope.ServiceProvider;
             var _context = services.GetRequiredService<ApplicationDbContext>();
-
             var LoggerFactory = services.GetRequiredService<ILoggerFactory>();
-
             try
             {
-
                 await _context.Database.MigrateAsync();
                 await ContextSeeding.SeedAsync(_context);
             }
             catch (Exception ex)
             {
+                //Log For Display Exceptions
                 var logger = LoggerFactory.CreateLogger<Program>();
                 logger.LogError(ex, "an Error during Apply Migration");
             }
+
 
 
 
