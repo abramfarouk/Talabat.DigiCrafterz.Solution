@@ -1,5 +1,7 @@
 
 using Microsoft.EntityFrameworkCore;
+using Talabat.Core.Repositories.Contract;
+using Talabat.Repository;
 using Talabat.Repository.Data;
 
 namespace Talabat.APIs
@@ -17,7 +19,19 @@ namespace Talabat.APIs
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            //Services
+            //Custom Services
+
+
+            builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+
+
+
+
+
+
+
+
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             {
@@ -38,6 +52,7 @@ namespace Talabat.APIs
             {
 
                 await _context.Database.MigrateAsync();
+                await ContextSeeding.SeedAsync(_context);
             }
             catch (Exception ex)
             {
