@@ -1,7 +1,7 @@
 
 using Microsoft.EntityFrameworkCore;
+using Talabat.APIs.MiddleWare;
 using Talabat.Core.Helper;
-using Talabat.Core.Repositories.Contract;
 using Talabat.Repository;
 using Talabat.Repository.Data;
 
@@ -31,9 +31,31 @@ namespace Talabat.APIs
 
             builder.Services.AddAutoMapper(typeof(MappingProfiles));
 
+
+
+            //Change Default Confirgure Error in Display Json 
+
+            builder.Services.Configure<ApiBehaviorOptions>(opt =>
+            {
+                opt.InvalidModelStateResponseFactory = (actionContext) =>
+                {
+                    var errors = actionContext.ModelState.Where(Param => Param.Value.Errors.Count() > 0)
+                    .SelectMany(P => P.Value.Errors)
+                    .Select(E => E.ErrorMessage)
+                    .ToArray();
+
+                    var validationErrors = new ApiValidationErrorsResponse()
+                    {
+                        Errors = errors
+                    };
+                    return new BadRequestObjectResult(validationErrors);
+                };
+            });
+
+
+
+
             var app = builder.Build();
-
-
 
             //Update Database Dynamic
             using var scope = app.Services.CreateScope();
@@ -55,7 +77,7 @@ namespace Talabat.APIs
 
 
 
-
+            app.UseMiddleware<ExceptionMiddleWare>();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -64,6 +86,9 @@ namespace Talabat.APIs
                 app.UseSwaggerUI();
             }
 
+            //Handle Not Found Pages
+            app.UseStatusCodePagesWithReExecute("/errors/{0}"); //the better
+            //app.UseStatusCodePagesWithRedirects("/errors/{0}");
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

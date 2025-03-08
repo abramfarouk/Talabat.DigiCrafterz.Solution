@@ -1,9 +1,6 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
-using Talabat.Core.DTOS.ProductDtos;
-using Talabat.Core.Entities;
-using Talabat.Core.Repositories.Contract;
-using Talabat.Core.Specifications.Product_Specs;
+﻿
+
+using System.Net;
 
 namespace Talabat.APIs.Controllers
 {
@@ -19,6 +16,15 @@ namespace Talabat.APIs.Controllers
             _productRepo = productRepo;
             _mapper = mapper;
         }
+
+        [HttpGet]
+        public IActionResult Index(int Id)
+        {
+
+            return Ok();
+        }
+
+
 
         [HttpGet("GetAll")]
         public async Task<ActionResult<ProductResponseDto>> GetAllAsync()
@@ -38,7 +44,7 @@ namespace Talabat.APIs.Controllers
 
             if (product == null)
             {
-                return NotFound(new { message = $"Product Not Found With Id => [{id}] Try Again !" });
+                return NotFound(new ApiErrorResponse(HttpStatusCode.NotFound));
             }
 
             return Ok(_mapper.Map<Product, ProductResponseDto>(product));
