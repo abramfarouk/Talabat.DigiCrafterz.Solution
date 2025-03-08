@@ -1,5 +1,6 @@
 
 using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
 using Talabat.APIs.MiddleWare;
 using Talabat.Core.Helper;
 using Talabat.Repository;
@@ -24,6 +25,7 @@ namespace Talabat.APIs
 
 
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            builder.Services.AddScoped<IBasketRepository, BasketRepository>();
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             { options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectionDB")); }
 
@@ -31,6 +33,11 @@ namespace Talabat.APIs
 
             builder.Services.AddAutoMapper(typeof(MappingProfiles));
 
+            builder.Services.AddSingleton<IConnectionMultiplexer>((sp) =>
+            {
+                var connection = builder.Configuration.GetConnectionString("Redis");
+                return ConnectionMultiplexer.Connect(connection);
+            });
 
 
             //Change Default Confirgure Error in Display Json 

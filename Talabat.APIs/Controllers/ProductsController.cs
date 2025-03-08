@@ -1,6 +1,5 @@
-﻿
-
-using System.Net;
+﻿using System.Net;
+using Talabat.Core.Helper;
 
 namespace Talabat.APIs.Controllers
 {
@@ -27,12 +26,15 @@ namespace Talabat.APIs.Controllers
 
 
         [HttpGet("GetAll")]
-        public async Task<ActionResult<ProductResponseDto>> GetAllAsync()
+        public async Task<ActionResult<ProductResponseDto>> GetAllAsync([FromQuery] ProductSpecParams specParams)
         {
-            var spec = new ProductWithBrandAndCategorySpecifications();
+            var spec = new ProductWithBrandAndCategorySpecifications(specParams);
             var products = await _productRepo.GetAllWithSpecAsync(spec);
+            var data = _mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductResponseDto>>(products);
+            var specCount = new ProductwithFiterationSpecCount(specParams);
+            var count = await _productRepo.CountAsync(specCount);
 
-            return Ok(_mapper.Map<IEnumerable<Product>, IEnumerable<ProductResponseDto>>(products));
+            return Ok(new Pagination<ProductResponseDto>(specParams.PageIndex, specParams.PageSize, count, data));
         }
 
         [HttpGet("GetById/{id}")]

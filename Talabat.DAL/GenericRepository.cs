@@ -76,7 +76,7 @@ namespace Talabat.Repository
             await _context.Database.RollbackTransactionAsync();
         }
 
-        public async Task<IEnumerable<T>> GetAllWithSpecAsync(ISpecifications<T> spec)
+        public async Task<IReadOnlyList<T>> GetAllWithSpecAsync(ISpecifications<T> spec)
         {
             return await ApplySpecifications(spec).ToListAsync();
         }
@@ -91,6 +91,9 @@ namespace Talabat.Repository
         private IQueryable<T> ApplySpecifications(ISpecifications<T> specifications)
             => SPecificationsEvaluator<T>.GetQuery(_context.Set<T>(), specifications);
 
+        public async Task<int> CountAsync(ISpecifications<T> spec)
+
+              => await ApplySpecifications(spec).CountAsync();
 
 
         #endregion
